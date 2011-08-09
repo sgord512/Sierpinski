@@ -1,0 +1,9 @@
+Right now this is just a tiny Haskell implementation of a Sierpinski's Triangle.
+
+If you provide a whole number argument, the app will generate a still frame with that many layers of recursion.
+
+If you do not provide a number, the app will animate, iterating once per second.
+
+Press ESC to quit.
+
+-Spencer Gordon
