@@ -6,4 +6,23 @@ If you do not provide a number, the app will animate, iterating once per second.
 
 Press ESC to quit.
 
+----------------------------------------------------------------------------------------------------
+
+Ok, I'm now working on implementing a maze generator, after which I will try and implement a maze solver.
+
+Right now, I don't have either working.
+
+Ok, so I want to have some way of generating the maze, where I look at each possible wall exactly once, and where all paths can be found easily in a lookup structure of some sort.
+
+Well, I have the grid and walls generated, which took forever!!!!
+
+But I don't have a working maze, or at least no guarantee that you can get from any one point to any other point.
+
+I will get that working later!
+
+But now I upload
+
+
+
+
 -Spencer Gordon
