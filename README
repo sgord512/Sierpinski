@@ -20,7 +20,15 @@ But I don't have a working maze, or at least no guarantee that you can get from 
 
 I will get that working later!
 
-But now I upload
+NOW I GOT THAT WORKING, JUST INCREDIBLY SLOWLY.
+
+Ok, so I can now find and handle the seperate regions of the grid, but only using an absurdly slow algorithm, and with code taht is less elegant than I would like it to be. So I'm gonna work on that, but I'll upload for now to prove to the taskmaster in my head that I have actually made progress. Also, I'm setting up a test suite, which is totally appropriate for this program, because there is a lot of purely functional stuff to test. 
+
+Also, there are a lot of interesting mathematical things to explore with this, though I will save those for later.
+
+
+
+
 
 
 

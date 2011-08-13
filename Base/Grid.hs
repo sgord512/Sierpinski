@@ -41,6 +41,16 @@ instance Eq Connected where
          (Connect a b) == (Connect a' b') = (a == a' && b == b') ||
                                             (a == b' && b == a')
 
+linked :: Connected -> Connected -> Bool
+linked (Connect a b) (Connect a' b') = (a == a' || b == b' || a == b' || b == a')
+
+links :: Connected -> Tile -> Maybe Tile
+links (Connect a b) t | (a == t) = Just b
+                      | (b == t) = Just a
+                      | otherwise = Nothing
+
+
+
 -- Applies a function to both elements of a tuple
 
 onPair :: (a -> b) -> (a, a) -> (b, b)

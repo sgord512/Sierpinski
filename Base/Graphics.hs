@@ -2,7 +2,12 @@ module Base.Graphics where
 
 import Base.Grid
 import Graphics.Gloss
+import Data.List ( find )
+import Data.Maybe ( fromJust, fromMaybe )
+import Data.Set ( Set )
+import qualified Data.Set as Set
 
+       
 tileRadius = 20
 gap = 3
 tileColor = azure
@@ -17,8 +22,10 @@ class Visible a where
 
 instance Visible Tile where
          toPicture (Tile x y) = let coord = bottomLeftCorner (fromIntegral `onPair` (x, y))
-                                    color = Color tileColor                         
-                                in color (square coord tileRadius)
+                                in (square coord tileRadius)
+
+findGroupColor :: [(Set Tile, Color)] -> Tile -> Color
+findGroupColor groupColorMap tile = snd (fromMaybe (Set.empty, black) $ (find (\(set, _) -> tile `Set.member` set) groupColorMap))
 
 -- Draws a square of a given side-length from a row and col held as a tile
 
@@ -43,19 +50,14 @@ instance Visible Connected where
                                                                o = bottomLeftCorner (fromIntegral `onPair` (x', y'))
                                                                w = if isNS dir then tileRadius else gap
                                                                h = if isNS dir then gap else tileRadius
-                                                           in Color tileColor (rect (o `goTo` dir) w h)
+                                                           in (rect (o `goTo` dir) w h)
 
 instance Visible Wall where
          toPicture (Block a@(Tile x y) b@(Tile x' y')) = let dir = (fromIntegral `onPair` (x, y)) `directionFrom` (fromIntegral `onPair` (x', y'))
                                                              o = bottomLeftCorner (fromIntegral `onPair` (x', y'))
                                                              w = if isNS dir then tileRadius else gap
                                                              h = if isNS dir then gap else tileRadius
-                                                             color = case dir of
-                                                                          N -> red
-                                                                          E -> white
-                                                                          W -> green 
-                                                                          S -> yellow
-                                                         in Color color (rect (o `goTo` dir) w h)
+                                                         in Color wallColor (rect (o `goTo` dir) w h)
  
 
 
