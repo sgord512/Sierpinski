@@ -14,13 +14,13 @@ import System.Random
 
 groupColors = [red, green, blue, yellow, cyan, magenta, rose, violet, azure, aquamarine, chartreuse, orange]
 
-
 corner = (200,200)
 
-main = do rdmGen <- getStdGen
+main = do putStrLn "Hello, World"
+          rdmGen <- getStdGen
           let board = [Tile x y | x <- [-xTiles..xTiles], y <- [-yTiles..yTiles] ]
               (connections, walls) = buildWalls rdmGen $ connectTiles board
-              groupColorMap = zip (groupsToSets $ (partitionBoard board $ Set.toList connections)) (cycle groupColors)
+              groupColorMap = zip (groupsToSets $ (partitionBoard board $ placeConnectionsInArray connections)) (cycle groupColors)
               coloredWalls = map toPicture $ Set.toList walls
               coloredConnects = map (\(Connect a b, pic) -> let (c, c') = (findGroupColor groupColorMap) `onPair` (a, b)
                                                                 color = if (c == c') then c else black
@@ -34,4 +34,6 @@ main = do rdmGen <- getStdGen
                           corner
                           black
                           drawnObjects
+
+
 

@@ -26,11 +26,18 @@ Ok, so I can now find and handle the seperate regions of the grid, but only usin
 
 Also, there are a lot of interesting mathematical things to explore with this, though I will save those for later.
 
+Ok, I now have the surface being partitioned correctly, and I believe in pretty good time. (Though I am sure it would be possible to make it way, way faster.)
 
+I've replaced a lot list traversals with array lookups, which should have very positive effects on time. I've also gotten rid of a lot of unnecessary operations, which should help further.
 
+So what do I want to do next: 
 
+Well, when I am not being lazy, I might as well add some command-line options to make it more interactive and fun! So customize the size, and mabye the way that connections are switched to walls.
 
+With the data I have now, I can go ahead and make any given layout solvable, or on the other hand, I could further partition things. I should investigate this further.
 
+I should also figure out how to get profiling done, not that I particularly need to now.
 
+That's it for now, I guess.
 
 -Spencer Gordon
