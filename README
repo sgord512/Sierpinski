@@ -8,27 +8,13 @@ Press ESC to quit.
 
 ----------------------------------------------------------------------------------------------------
 
-Ok, I'm now working on implementing a maze generator, after which I will try and implement a maze solver.
-
-Right now, I don't have either working.
-
-Ok, so I want to have some way of generating the maze, where I look at each possible wall exactly once, and where all paths can be found easily in a lookup structure of some sort.
-
-Well, I have the grid and walls generated, which took forever!!!!
-
 But I don't have a working maze, or at least no guarantee that you can get from any one point to any other point.
-
-I will get that working later!
-
-NOW I GOT THAT WORKING, JUST INCREDIBLY SLOWLY.
-
-Ok, so I can now find and handle the seperate regions of the grid, but only using an absurdly slow algorithm, and with code taht is less elegant than I would like it to be. So I'm gonna work on that, but I'll upload for now to prove to the taskmaster in my head that I have actually made progress. Also, I'm setting up a test suite, which is totally appropriate for this program, because there is a lot of purely functional stuff to test. 
 
 Also, there are a lot of interesting mathematical things to explore with this, though I will save those for later.
 
 Ok, I now have the surface being partitioned correctly, and I believe in pretty good time. (Though I am sure it would be possible to make it way, way faster.)
 
-I've replaced a lot list traversals with array lookups, which should have very positive effects on time. I've also gotten rid of a lot of unnecessary operations, which should help further.
+I've replaced a lot of the list traversals with array lookups, which should have very positive effects on time. I've also gotten rid of a lot of unnecessary operations, which should help further.
 
 So what do I want to do next: 
 
@@ -39,5 +25,12 @@ With the data I have now, I can go ahead and make any given layout solvable, or 
 I should also figure out how to get profiling done, not that I particularly need to now.
 
 That's it for now, I guess.
+
+----------------------------------------------------------------------------------------------------
+
+Well, after like three days of work, I finally got the state monad in place, and refactored all the maze junk. Yay!
+
+Now, let's figure out what to do next.
+
 
 -Spencer Gordon

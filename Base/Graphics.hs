@@ -39,9 +39,9 @@ rect (x, y) w h = Polygon [(x, y)
 
 -- Calculates the Bottom Left corner of a tile in a given row and column
 
-bottomLeftCorner (x, y) = (\a -> a - ((gap + tileRadius) / 2)) `onPair` (x * (gap + tileRadius) + gap
-                                                                        ,y * (gap + tileRadius) + gap
-                                                                        )
+bottomLeftCorner (x, y) = (subtract 0) `onPair` (x * (gap + tileRadius) + gap
+                                                ,y * (gap + tileRadius) + gap
+                                                )
 
 -- Returns the picture representation of a wall between two tiles
 
