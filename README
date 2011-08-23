@@ -32,5 +32,22 @@ Well, after like three days of work, I finally got the state monad in place, and
 
 Now, let's figure out what to do next.
 
+----------------------------------------------------------------------------------------------------
+
+Ok, so I've tried to implement Djikstra's Algorithm, and failed, but I haven't given up hope, because I'm nothing if not stubborn.
+
+I now have a command-line option to choose a seed for the maze generator, so that I can trace through the expected behavior for a maze, and compare that to the result.
+And I can repeat mazes to check stuff, etc...
+
+But that is for tomorrow.
+
+Also, I added random strictness in, and I don't know what effect that has had on my program. Also, I don't have a consistent way of cataloging errors.
+
+Also, I should test it, with QuickCheck.
+
+Use the Hitchiker's Guide tutorial on QuickCheck.
+
+
+
 
 -Spencer Gordon
