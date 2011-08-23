@@ -37,7 +37,7 @@ setUpMaze dim rdm = let tiles = generateTiles dim
                              , allWalls = builtWalls
                              }
 
-pickStartAndEnd :: StdGen -> BoardState (Tile, Tile)
+pickStartAndEnd :: StdGen -> BoardState StartEnd
 pickStartAndEnd rdm = do tiles <- getTiles
                          limits <- getLimits
                          let (edgeTiles, innerTiles) = partition (isEdgeTile limits) tiles

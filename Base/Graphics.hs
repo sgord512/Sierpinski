@@ -28,8 +28,9 @@ class Visible a where
 -- Returns the picture representation of a tile
 
 instance Visible Tile where
-         toPicture (Tile x y) | (x == 0 && y == 0) = let coord = bottomLeftCorner (fromIntegral `onPair` (x, y))
+{--         toPicture (Tile x y) | (x == 0 && y == 0) = let coord = bottomLeftCorner (fromIntegral `onPair` (x, y))
                                                      in (Color cyan (square coord tileRadius))
+--}                                                  
          toPicture (Tile x y) | otherwise = let coord = bottomLeftCorner (fromIntegral `onPair` (x, y))
                                             in (square coord tileRadius)
 {--         

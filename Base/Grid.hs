@@ -5,6 +5,7 @@ import Base.Toolbox ( onPair )
 type Point = (Int, Int)
 type XYLimits = (Point, Point)
 type TileGroup = [Tile]
+type StartEnd = (Tile, Tile)
 
 -- Used to make drawing easier
 

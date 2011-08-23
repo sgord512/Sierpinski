@@ -34,7 +34,7 @@ main = do input <- getArgs
               (dkResult, finalBoard) = runState searchForPath startingDjikstra
 --              (tileGroups, board) = runState partitionBoard startingBoard
               images = boardToDjikstraPicture dkResult (board finalBoard)
---          putStrLn (show ((length $ allTiles startingBoard) - (length $ allTiles $ board finalBoard)) ++ " are missing from the board after choosing a start and end")
+--              images = boardToPlainPicture startingBoard
           displayInWindow "Maze Generator by Spencer Gordon"
                           (sizeFromRowsCols (dim options))
                           corner

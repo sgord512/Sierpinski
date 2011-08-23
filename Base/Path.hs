@@ -31,9 +31,12 @@ instance Eq TilePath where
 -- tilePaths are ordered by length, and then by tile
 
 instance Ord TilePath where 
-         t `compare` t' = case (pathLength t) `compare` (pathLength t') of
-                               EQ -> t `compare` t'
-                               res -> res
+         (Root t) `compare` (Root t') = t `compare` t'
+         (Path t tp len) `compare` (Path t' tp' len') = case len `compare` len' of
+                                                             EQ -> case t `compare` t' of
+                                                                        EQ -> tp `compare` tp'
+                                                                        res -> res
+                                                             res -> res
 
 pathLength :: TilePath -> Int
 pathLength (Root t) = 1
@@ -75,32 +78,37 @@ data Djikstra = Djikstra { visitedTiles :: Set Tile
 -- The actual algorithm (note that it doesn't have any input)
 
 searchForPath :: DjikstraState DjikstraResult
-searchForPath = do next <- getNextToVisit 
-                   case next `tracing` "examining next" of
+searchForPath = do start <- getStart
+                   result <- visitTile (Root start) --`tracing` ("I'm at the start, which is: " ++ show start)
+                   case result of 
+                        Nothing -> do visited <- getVisited
+                                      return $ Right visited
+                        Just tp -> return $ Left tp
+{--                   case next `tracing` "examining next" of
                      Nothing -> do visited <- getVisited
                                    return $ Right visited 
                      Just tp -> do result <- visitTile tp
                                    case result of 
                                      Nothing -> searchForPath `tracing` "visiting that path was a dead end, so I repeat"
                                      Just tp' -> (return $ Left tp') `tracing` "hey, success, I'm done."
-
+--}
 -- creates the Djikstra to store all the state
 
-setUpDjikstra :: (Tile, Tile) -> Board ->  Djikstra
+setUpDjikstra :: StartEnd -> Board ->  Djikstra
 setUpDjikstra (s, e) b = Djikstra { visitedTiles = Set.empty
-                                  , pathsToVisit = Set.singleton (Root s)
+                                  , pathsToVisit = Set.empty
                                   , board = b
-                                  , start = s `tracing` ("start is: " ++ show s)
-                                  , end = e `tracing` ("end is: " ++ show e)
+                                  , start = s --`tracing` ("start is: " ++ show s)
+                                  , end = e --`tracing` ("end is: " ++ show e)
                                   }
 
 getVisited :: DjikstraState (Set Tile)
 getVisited = do dk <- get                
-                (return $! visitedTiles dk) `tracing` ("length of visited tiles: " ++ (show $ Set.size $ visitedTiles dk))
+                (return $! visitedTiles dk) --`tracing` ("length of visited tiles: " ++ (show $ Set.size $ visitedTiles dk))
 
 getPathsToVisit :: DjikstraState (Set TilePath)
 getPathsToVisit = do dk <- get
-                     (return $! pathsToVisit dk) `tracing` ("length of paths to visit: " ++ (show $ Set.size $ pathsToVisit dk))
+                     (return $! pathsToVisit dk) --`tracing` ("length of paths to visit: " ++ (show $ Set.size $ pathsToVisit dk))
 
 -- gets the minimum path in the set of paths to visit or nothing if it is empty, in which case the algorithm should terminate
 
@@ -162,7 +170,7 @@ addToPathsToVisit path tiles = do dk <- get
                                       ptv' = foldr insertWithoutReplacement ptv paths 
                                   --addToVisited validTiles
                                   put $ dk { pathsToVisit = ptv' }
-                                  (return ()) `tracing` ("length of visited tiles: " ++ (show $ Set.size visited))
+                                  (return ()) --`tracing` ("length of visited tiles: " ++ (show $ Set.size visited))
 
 -- adds a tile to the set of visited tiles
 
@@ -171,17 +179,19 @@ addToVisited tiles = do dk <- get
                         visited <- getVisited
                         let visited' = foldr insertWithoutReplacement visited tiles
                         put $ dk { visitedTiles = visited' }
-                        (return ()) `tracing` "adding stuff to visited"
+                        (return ()) --`tracing` "adding stuff to visited"
 
 -- the body of the algorithm, checks if at destination, gets next nodes, updates visited and pathsToVisited, and recurs on nextToVisit
 
 visitTile :: TilePath -> DjikstraState (Maybe TilePath)
-visitTile t = do done <- seq (addToVisited ((lastTile t):[]) `tracing` "adding current tile to visited") (isEnd $ lastTile t)
-                 if done `tracing` ("currently I am here: " ++ show (lastTile t))
+visitTile t = do addToVisited ((lastTile t):[]) --`tracing` "adding current tile to visited") 
+                 done <- isEnd $ lastTile t
+                 if done
                    then return $ Just t
-                   else do nbors <- (getReachableNeighbors $ lastTile t) `tracing` "getting neighbors"
-                           next <- seq (($! (addToPathsToVisit t) nbors) `tracing` "adding paths to visit") (getNextToVisit `tracing` "getting next path to visit")
+                   else do nbors <- getReachableNeighbors $ lastTile t --`tracing` "getting neighbors"
+                           addToPathsToVisit t nbors --`tracing` "adding paths to visit"
+                           next <- getNextToVisit --`tracing` "getting next path to visit"
                            case next of 
                              Nothing -> return Nothing
-                             Just tp -> do result <- visitTile tp
-                                           return $! result                 
+                             Just tp -> do visitTile tp --`tracing` ("currently I am here: " ++ show (lastTile tp))
+
