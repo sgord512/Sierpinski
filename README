@@ -47,7 +47,16 @@ Also, I should test it, with QuickCheck.
 
 Use the Hitchiker's Guide tutorial on QuickCheck.
 
+----------------------------------------------------------------------------------------------------
 
+Well, it all works now. Now what?
+
+Ok, I'm gonna animate the pathfinding algorithm, which means that I am going to have to figure out some way of keeping track of all the different states of the computation.
+Basically I need to keep a record of the current path and all visited tiles whenever I enter the visitTiles function. 
+
+I think I can do that with the WriterT monad transformer.
+
+But I don't yet know how to handle Monad Transformers, so I will have to learn that.
 
 
 -Spencer Gordon

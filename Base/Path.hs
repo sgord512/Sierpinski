@@ -18,8 +18,6 @@ data TilePath = Path Tile TilePath Int | Root Tile deriving ( Show )
 
 makePath :: Tile -> TilePath -> TilePath
 makePath t tp = Path t tp ((pathLength tp) + 1)
-                
-
 
 -- tilePaths are considered equal if the most recent tile is the same
 
@@ -84,31 +82,24 @@ searchForPath = do start <- getStart
                         Nothing -> do visited <- getVisited
                                       return $ Right visited
                         Just tp -> return $ Left tp
-{--                   case next `tracing` "examining next" of
-                     Nothing -> do visited <- getVisited
-                                   return $ Right visited 
-                     Just tp -> do result <- visitTile tp
-                                   case result of 
-                                     Nothing -> searchForPath `tracing` "visiting that path was a dead end, so I repeat"
-                                     Just tp' -> (return $ Left tp') `tracing` "hey, success, I'm done."
---}
+
 -- creates the Djikstra to store all the state
 
 setUpDjikstra :: StartEnd -> Board ->  Djikstra
 setUpDjikstra (s, e) b = Djikstra { visitedTiles = Set.empty
                                   , pathsToVisit = Set.empty
                                   , board = b
-                                  , start = s --`tracing` ("start is: " ++ show s)
-                                  , end = e --`tracing` ("end is: " ++ show e)
+                                  , start = s 
+                                  , end = e 
                                   }
 
 getVisited :: DjikstraState (Set Tile)
 getVisited = do dk <- get                
-                (return $! visitedTiles dk) --`tracing` ("length of visited tiles: " ++ (show $ Set.size $ visitedTiles dk))
+                (return $! visitedTiles dk) 
 
 getPathsToVisit :: DjikstraState (Set TilePath)
 getPathsToVisit = do dk <- get
-                     (return $! pathsToVisit dk) --`tracing` ("length of paths to visit: " ++ (show $ Set.size $ pathsToVisit dk))
+                     (return $! pathsToVisit dk) 
 
 -- gets the minimum path in the set of paths to visit or nothing if it is empty, in which case the algorithm should terminate
 
@@ -165,12 +156,10 @@ addToPathsToVisit path tiles = do dk <- get
                                   visited <- getVisited
                                   ptv <- getPathsToVisit
                                   let (tiles', _) = partition (\t -> Set.notMember t visited) tiles
-                                      --validTiles = filter (\t -> not $ contains t path) tiles'
                                       paths = map (\t -> makePath t path) tiles'                                 
                                       ptv' = foldr insertWithoutReplacement ptv paths 
-                                  --addToVisited validTiles
                                   put $ dk { pathsToVisit = ptv' }
-                                  (return ()) --`tracing` ("length of visited tiles: " ++ (show $ Set.size visited))
+                                  (return ())
 
 -- adds a tile to the set of visited tiles
 
@@ -179,19 +168,18 @@ addToVisited tiles = do dk <- get
                         visited <- getVisited
                         let visited' = foldr insertWithoutReplacement visited tiles
                         put $ dk { visitedTiles = visited' }
-                        (return ()) --`tracing` "adding stuff to visited"
+                        (return ())
 
 -- the body of the algorithm, checks if at destination, gets next nodes, updates visited and pathsToVisited, and recurs on nextToVisit
 
 visitTile :: TilePath -> DjikstraState (Maybe TilePath)
-visitTile t = do addToVisited ((lastTile t):[]) --`tracing` "adding current tile to visited") 
+visitTile t = do addToVisited ((lastTile t):[])
                  done <- isEnd $ lastTile t
                  if done
                    then return $ Just t
-                   else do nbors <- getReachableNeighbors $ lastTile t --`tracing` "getting neighbors"
-                           addToPathsToVisit t nbors --`tracing` "adding paths to visit"
-                           next <- getNextToVisit --`tracing` "getting next path to visit"
+                   else do nbors <- getReachableNeighbors $ lastTile t
+                           addToPathsToVisit t nbors
+                           next <- getNextToVisit
                            case next of 
                              Nothing -> return Nothing
-                             Just tp -> do visitTile tp --`tracing` ("currently I am here: " ++ show (lastTile tp))
-
+                             Just tp -> do visitTile tp
