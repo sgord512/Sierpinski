@@ -31,16 +31,32 @@ main = do input <- getArgs
           let startingBoard = (setUpMaze (dim options) gen)              
               (pair, boardWithStartAndEnd) = runState (pickStartAndEnd gen) startingBoard
               startingDjikstra = setUpDjikstra pair boardWithStartAndEnd
-              (dkResult, finalBoard) = runState searchForPath startingDjikstra
+              (_, searchStateList) = generateDjikstraList startingDjikstra
+              imagesList = map (djikstraStatePicture startingDjikstra) searchStateList
+          animatedDisplay options imagesList      
+--          (dkResult, finalBoard) = runState searchForPath startingDjikstra
 --              (tileGroups, board) = runState partitionBoard startingBoard
-              images = boardToDjikstraPicture dkResult (board finalBoard)
+--              images = boardToDjikstraPicture dkResult (board finalBoard)
 --              images = boardToPlainPicture startingBoard
-          displayInWindow "Maze Generator by Spencer Gordon"
-                          (sizeFromRowsCols (dim options))
-                          corner
-                          black
-                          images
+--          staticDisplay options images
+          
 
+-- Calculates the size of a window from its windows and columns
+
+sizeFromRowsCols :: (Int, Int) -> (Int, Int)
+sizeFromRowsCols rc = ((ceiling .  (\s -> (s + 2) * (gap + tileRadius) + 2 * gap) . fromIntegral) `onPair` rc)
+
+-- Takes a single picture and the options and displays that
+
+staticDisplay :: Options -> Picture -> IO ()
+staticDisplay options images = displayInWindow "Maze Generator by Spencer Gordon" (sizeFromRowsCols $ dim options) corner black images
+
+-- This will restart the animation from the beginning when it reaches the end of the list
+
+animatedDisplay :: Options -> [Picture] -> IO ()
+animatedDisplay options pics = animateInWindow "Maze Generator by Spencer Gordon" (sizeFromRowsCols $ dim options) corner black (\time -> pics !! ((truncate (12 * time)) `mod` (length pics)))
+
+-- All the stuff I need in place to handle the option processing
 
 data Options = Options { dim :: (Int, Int)
                        , seed :: (Maybe StdGen)
@@ -55,7 +71,3 @@ optionsList :: [ OptDescr (Options -> Options) ]
 optionsList = [ Option ['s'] ["size"] (ReqArg (\arg opt -> opt { dim = let n = read arg in (n, n) })  "SIDE LENGTH OF SQUARE") "Choose how large a maze you would like to create" 
               , Option ['g'] ["generator"] (ReqArg (\arg opt -> opt { seed = Just (mkStdGen $ read arg) }) "INT USED TO GENERATE MAZE") "Specify a seed with which to generate your board for deterministic results"
               ]
-
-                                   
-sizeFromRowsCols :: (Int, Int) -> (Int, Int)
-sizeFromRowsCols = ((ceiling .  (\s -> (s + 2) * (gap + tileRadius) + 2 * gap) . fromIntegral) `onPair`)

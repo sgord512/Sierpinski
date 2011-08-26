@@ -5,6 +5,7 @@ import Base.Grid
 import Base.Maze
 import Base.Toolbox ( insertWithoutReplacement, tracing )
 import Control.Monad.State
+import Control.Monad.Trans.Writer
 import Data.Array ( bounds, (!) )
 import Data.List ( find, partition )
 import Data.Maybe ( fromMaybe, fromJust, isNothing )
@@ -77,7 +78,7 @@ data Djikstra = Djikstra { visitedTiles :: Set Tile
 
 searchForPath :: DjikstraState DjikstraResult
 searchForPath = do start <- getStart
-                   result <- visitTile (Root start) --`tracing` ("I'm at the start, which is: " ++ show start)
+                   result <- visitTile (Root start) 
                    case result of 
                         Nothing -> do visited <- getVisited
                                       return $ Right visited
@@ -183,3 +184,42 @@ visitTile t = do addToVisited ((lastTile t):[])
                            case next of 
                              Nothing -> return Nothing
                              Just tp -> do visitTile tp
+
+-- The WriterT Monad transformer stacked on top of DjikstraState
+
+type RecordDjikstra = WriterT SearchStateList DjikstraState
+type SearchStateList = [SearchState]
+type SearchState = (TilePath, Set Tile)
+
+currentTilePath :: SearchState -> TilePath
+currentTilePath = fst 
+
+visitedTileSet :: SearchState -> Set Tile
+visitedTileSet = snd
+
+generateDjikstraList :: Djikstra -> (DjikstraResult, SearchStateList)
+generateDjikstraList startingDjikstra = evalState (runWriterT searchForPathAndRecord) startingDjikstra
+
+-- The logging versions of the Djikstra Algorithm
+                                           
+searchForPathAndRecord :: RecordDjikstra DjikstraResult
+searchForPathAndRecord = do start <- lift getStart
+                            result <- visitTileAndRecord (Root start)
+                            case result of 
+                              Nothing -> do visited <- lift getVisited
+                                            return $ Right visited
+                              Just tp -> return $ Left tp
+
+visitTileAndRecord :: TilePath -> RecordDjikstra (Maybe TilePath)
+visitTileAndRecord t = do lift (addToVisited ((lastTile t):[]))
+                          visited <- lift getVisited
+                          tell [(t, visited)]
+                          done <- lift (isEnd $ lastTile t)
+                          if done
+                            then return $ Just t
+                            else do nbors <- lift (getReachableNeighbors $ lastTile t)
+                                    lift (addToPathsToVisit t nbors)
+                                    next <- lift getNextToVisit
+                                    case next of 
+                                      Nothing -> return Nothing
+                                      Just tp -> do visitTileAndRecord tp
